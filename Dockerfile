@@ -1,7 +1,7 @@
 # Use the official PostgreSQL 14 image
 FROM postgres:14.10
 
-# Install AWS CLI to interact with S3
+# Install AWS CLI and other dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
@@ -10,24 +10,33 @@ RUN apt-get update && apt-get install -y \
     groff \
     less \
     vim \
+    jq \ 
     && rm -rf /var/lib/apt/lists/*
+
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install \
     && rm -f awscliv2.zip
-RUN echo "consider configuring AWS CLI using environment variables or by mounting you .aws directory."
+
+# Install yq
+# Note: Replace the version number with the latest version from https://github.com/mikefarah/yq/releases
+RUN curl -Lo /usr/bin/yq "https://github.com/mikefarah/yq/releases/download/v4.25.1/yq_linux_amd64" \
+    && chmod +x /usr/bin/yq
+
 # Create a directory for the backups
 RUN mkdir /backups
 
 # Copy the backup script into the container
 COPY backup-to-s3.sh .
+COPY secrets.yaml .
 RUN chmod +x backup-to-s3.sh
+RUN chmod +x secrets.yaml
 
-CMD [ "./backup-to-s3.sh" ]
+CMD [ "./backup-to-s3.sh", "./secrets.yaml" ]
 
-#ENV AWS_DEFAULT_REGION="us-east-1"
-ENV DB_USER='doadmin'
-ENV DB_NAME='s6-user'
+# Set environment variables (example values, replace with actual values)
+ENV DB_USER="doadmin"
+ENV DB_NAME="s6-user"
 ENV DB_HOST='db-postgresql-nyc3-26515-do-user-12198957-0.c.db.ondigitalocean.com'
-
+ENV DB_PORT='25060'
