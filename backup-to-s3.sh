@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Load DB credentials from secrets.yaml
 DB_HOST=$(yq e '.DB_HOST' secrets.yaml)
 DB_PORT=$(yq e '.DB_PORT' secrets.yaml)

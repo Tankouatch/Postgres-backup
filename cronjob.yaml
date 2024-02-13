@@ -3,35 +3,40 @@ kind: CronJob
 metadata:
   name: postgres-backup
 spec:
-  schedule: "0 * * * *" # Runs at the start of every hour
+  schedule: "*/5 * * * *" # Runs at the start of every hour
   jobTemplate:
     spec:
       template:
         spec:
           containers:
           - name: postgres-backup
-            image: myapp:1.0
+            image: tankouatc/postgres-backup-image:V.1.0.0
             env:
             - name: DB_PORT
               valueFrom:
-              secretKeyRef:
-                name: secret
-                value: "DB_PORT"
+                secretKeyRef:
+                  name: secrets
+                  key: DB_PORT # Use 'key' instead of 'value'
             - name: PGPASSWORD
               valueFrom:
-              secretKeyRef:
-                name: secret
-                key: DB_PASSWORD
+                secretKeyRef:
+                  name: secrets
+                  key: DB_PASSWORD
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
-              secretKeyRef:
-                name: secret
-                key: AWS_ACCESS_KEY_ID
+                secretKeyRef:
+                  name: secrets
+                  key: AWS_ACCESS_KEY_ID
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
-              secretKeyRef:
-                name: secret
-                key: AWS_SECRET_ACCESS_KEY
-             - name: AWS_DEFAULT_REGION
-               value: "AWS_DEFAULT_REGION"
+                secretKeyRef:
+                  name: secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: AWS_DEFAULT_REGION  
           restartPolicy: OnFailure
+          imagePullSecrets:
+          - name: myregistrykey

@@ -28,15 +28,9 @@ RUN curl -Lo /usr/bin/yq "https://github.com/mikefarah/yq/releases/download/v4.2
 RUN mkdir /backups
 
 # Copy the backup script into the container
+
 COPY backup-to-s3.sh .
-COPY secrets.yaml .
 RUN chmod +x backup-to-s3.sh
-RUN chmod +x secrets.yaml
 
-CMD [ "./backup-to-s3.sh", "./secrets.yaml" ]
+CMD [ "./backup-to-s3.sh" ]
 
-# Set environment variables (example values, replace with actual values)
-ENV DB_USER="doadmin"
-ENV DB_NAME="s6-user"
-ENV DB_HOST='db-postgresql-nyc3-26515-do-user-12198957-0.c.db.ondigitalocean.com'
-ENV DB_PORT='25060'
