@@ -3,40 +3,56 @@ kind: CronJob
 metadata:
   name: postgres-backup
 spec:
-  schedule: "*/5 * * * *" # Runs at the start of every hour
+  schedule: "*/5 * * * *" # Runs every 5 minutes
   jobTemplate:
     spec:
+      backoffLimit: 4
       template:
         spec:
           containers:
-          - name: postgres-backup
-            image: tankouatc/postgres-backup-image:V.1.0.0
-            env:
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: secrets
-                  key: DB_PORT # Use 'key' instead of 'value'
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secrets
-                  key: DB_PASSWORD
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: secrets
-                  key: AWS_ACCESS_KEY_ID
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: secrets
-                  key: AWS_SECRET_ACCESS_KEY
-            - name: AWS_DEFAULT_REGION
-              valueFrom:
-                secretKeyRef:
-                  name: secrets
-                  key: AWS_DEFAULT_REGION  
+            - name: postgres-backup
+              image: tankouatc/postgres-backup-image:v.1.0.1
+              env:
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret
+                      key: DB_PORT
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret
+                      key: DB_PASSWORD
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret
+                      key: AWS_DEFAULT_REGION
+                - name: DB_USER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: db-config
+                      key: DB_USER
+                - name: DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: db-config
+                      key: DB_HOST
+                - name: DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: db-config
+                      key: DB_NAME
           restartPolicy: OnFailure
           imagePullSecrets:
-          - name: myregistrykey
+            - name: myregistrykey

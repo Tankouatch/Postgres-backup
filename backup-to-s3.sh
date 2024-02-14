@@ -1,11 +1,13 @@
 #!/bin/bash
 # Load DB credentials from secrets.yaml
-DB_HOST=$(yq e '.DB_HOST' secrets.yaml)
-DB_PORT=$(yq e '.DB_PORT' secrets.yaml)
-DB_USER=$(yq e '.DB_USER' secrets.yaml)
-DB_NAME=$(yq e '.DB_NAME' secrets.yaml)
-DB_PASSWORD=$(yq e '.DB_PASSWORD' secrets.yaml)
-
+DB_HOST=$(yq e '.DB_HOST' configMap.yaml)
+DB_PORT=$(yq e '.DB_PORT' secret.yaml)
+DB_USER=$(yq e '.DB_USER' configMap.yaml)
+DB_NAME=$(yq e '.DB_NAME' configMap.yaml)
+DB_PASSWORD=$(yq e '.DB_PASSWORD' secret.yaml)
+AWS_ACCESS_KEY_ID=$(yq e '.AWS_ACCESS_KEY_ID' secret.yaml)
+AWS_SECRET_ACCESS_KEY=$(yq e '.AWS_SECRET_ACCESS_KEY' secret.yaml)
+AWS_DEFAULT_REGION=$(yq e '.AWS_DEFAULT_REGION' secret.yaml)
 # Set the date format, filename and the S3 bucket path
 BACKUP_DATE=$(date +"%Y-%m-%d_%H-%M-%S")
 BACKUP_FILENAME="backup_$BACKUP_DATE.sql.tar.gz"

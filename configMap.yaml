@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data:
+  DB_USER: "doadmin"
+  DB_HOST: "db-postgresql-nyc3-26515-do-user-12198957-0.c.db.ondigitalocean.com"
+  DB_NAME: "s6-user"
